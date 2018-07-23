@@ -1,0 +1,25 @@
+{
+    "manifest_version": 2,
+    
+    "name": "Autorrellenador de formularios para Chrome",
+    "description": "Esta extensión autorrellena el formulario elegido",
+    "version": "1.0",
+
+    "background": {
+        "scripts": [
+            "background.js"
+        ],
+        "persistent": false
+    },
+    "page_action": {
+        "default_icon": "AutoRellena.png",
+        "default_popup": "popup.html",
+        "default_title": "Relléna.me"
+    },
+
+    "permissions": [
+        "activeTab", "storage", "declarativeContent",
+        "http://localhost:49787/*",
+        "http://demo0699212.mockable.io/"
+    ]
+}

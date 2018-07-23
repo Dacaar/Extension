@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+  <html>
+    <head>
+      <style>
+        body {
+          height: 350px;
+          width: 450px;
+        }
+        input[type=text] {
+          width: 70%;
+          padding: 12px 20px;
+          margin: 8px 0;
+          display: inline-block;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          box-sizing: border-box;
+        }
+        #superior{
+          border: 2px solid royalblue;
+          position: absolute;
+          top: 50px;
+          border-radius: 5px;
+          height: 100px;
+          width: 450px;
+        }
+        #inferior{
+          border: 2px solid royalblue;
+          position: absolute;
+          top: 150px;
+          height: 100px;
+          width: 450px;
+        }
+        #extra{
+          border: 2px solid royalblue;
+          position: absolute;
+          top: 250px;
+          height: 100px;
+          width: 450px;
+        }
+        #mensaje {
+          position: relative;
+          top: 0px;
+          left: 0px;
+        }
+        #username_label{
+          position: absolute;
+          top: 50px;
+          left: 0%;
+        }
+        #username{
+          position: absolute;
+          top: 30px;
+          left: 30%;
+        }
+        #formularios_label{
+          position: absolute;
+          top: 50px;
+          left: 5px;
+        }
+        #configurar{
+          position: absolute;
+          top: 75px;
+          left: 355px;
+        }
+        input[type=button].superior {
+          position: absolute;
+          height: 30px;
+          width: 75px;
+          left: 20%;
+        }
+        input[type=button].inferior {
+          position: absolute;
+          top: 80px;
+          height: 30px;
+          width: 90px;
+        }
+        #formularios {
+          position: relative;
+          left: 100px;
+        }
+        #info_asignaciones{
+          position: absolute;
+          top: 30px;
+          left: 5px;
+        }
+        #campos{
+          width: 150px;
+        }
+
+        #tablas{
+          position: relative;
+          left: 5px;
+        }
+        #atributos{
+          position: relative;
+          left: 5px;
+        }
+        label{
+          height: 500px;
+          max-width: 500px;
+        }
+      </style>
+    </head>
+    <body>
+      <h3>Rellena.me</h3>
+      <div id="superior">
+        <button id="conectar" type="button" class="superior">Conectar</button>
+        <label id="mensaje"></label>
+        <label for="username" id="username_label">Nombre de usuario:</label>
+        <input type="text" id="username" name="usuario" placeholder="Escriba su nombre de usuario"></input>
+      </div>
+      <div id="inferior">
+          <button id="autorrellena" disabled type="button" class="inferior">Autorrellena</button>
+          <label for="formularios" id="formularios_label">Seleccione formulario</label>
+          <select id="formularios" disabled>
+            <option value="">Elija...</option>
+            <option value="Formulario1">Contacto</option>
+            <option value="Formulario2">Reserva</option>
+          </select>
+      </div>
+      <div id="extra">
+        <button id="asignar" disabled type="button" class="extra">Asignar</button>
+        <button id="configurar" disabled type="button" class="extra">Configurar</button>
+        <select id="campos" disabled>
+          <option value="inicial">Elija campo...</option>
+        </select>
+        <select id="tablas" disabled>
+          <option value="inicial">Elija tabla...</option>
+        </select>
+        <select id="atributos" disabled>
+          <option value="inicial">Elija atributos...</option>
+        </select>
+        <label id="info_asignaciones">eh</label>
+      </div>
+      <script src="popup.js"></script>
+    </body>
+  </html>
