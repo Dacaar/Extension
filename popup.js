@@ -73,16 +73,6 @@ function conectaBD(){
   request.send(params);
 }
 
- //PRÓXIMAMENTE: IF instrucciones incompletas --> completar ELSE autorrellenar
- //Pensar bien cómo completar los XML manteniendo su estructura y sin errores, puede ser complejo.
-
-
-/*Cuando se seleccione un formulario en la lista y se presione autorrellenar, popup.js obtendrá el valor
-del combo box de formularios (contacto, por ejemplo) y lo enviará por mensaje al archivo que hará de 
-content_script (el que interactúa con el DOM de la página). Allí, este archivo recibirá del servicio
-web el fichero XML correspondiente y las tablas necesarias. Completará despues los campos del form y
-devolverá el control a popup.js.*/
-
 function rellena (){
   if (forms.value == "Formulario1"){
     configurado = "si";
@@ -123,12 +113,34 @@ function getCamposFormulario (){
 function compruebaCorreccion(form_activo){
   //Si selecciona contacto, comprobar que no haya un registro almacenado en chrome storage.
   //if yes, extrae el registro. else habilita configuracion.
-  /*let form_serializado = new XMLSerializer().serializeToString(formulario_activo);
-  alert(form_serializado);
+  let form_serializado = new XMLSerializer().serializeToString(formulario_activo);
+  /*alert(form_serializado);
   let parser = new DOMParser();
   let form_parseao = parser.parseFromString(form_serializado, "text/xml");
   alert(form_parseao);
   alert(new XMLSerializer().serializeToString(form_parseao));*/
+  chrome.storage.local.clear();
+
+
+  /*chrome.storage.local.getBytesInUse(['form'], function(bytes){
+    alert(bytes);
+  });
+
+  chrome.storage.local.set({'form': form_serializado}, function() {
+    alert("formulario guardado");
+  });
+
+  if (chrome.storage){
+    chrome.storage.local.get('form', function(r) {
+      alert(r.form);
+    });
+  }*/
+
+  chrome.storage.local.getBytesInUse(['form'], function(bytes){
+    alert(bytes);
+  });
+  
+
 
   let tablas = form_activo.getElementsByTagName("tabla");
   let nombre = tablas[0].attributes.getNamedItem("valor").value;
@@ -240,12 +252,10 @@ function realizaAsignacion(){
     nombre_campo = desplegable_campos.selectedIndex.text;
 
     if (tablas_formulario.length == 1){//Si en el form solo hay una tabla, entonces no se permite cambiar de tabla durante la asignación.
-      if (tablas_formulario[0].attributes.getNamedItem("valor").value){
-        alert("EEEEEEhhh")
-        tablas_formulario[0].getElementsByTagName("valor").value = desplegable_tablas.options[desplegable_tablas.selectedIndex].text;//CADENA SELECCIONADA;
-        desplegable_tablas.disabled = true;
+      if (tablas_formulario[0].attributes.getNamedItem("valor").value == "no definida"){
+        tablas_formulario[0].attributes.getNamedItem("valor").value = desplegable_tablas.options[desplegable_tablas.selectedIndex].text;//CADENA SELECCIONADA;
       }
-
+      desplegable_tablas.disabled = true;
       campos_formulario = tablas_formulario[0].getElementsByTagName("campo");
     }
 
@@ -256,10 +266,18 @@ function realizaAsignacion(){
 
         desplegable_campos.remove(desplegable_campos.selectedIndex);
 
-        if (desplegable_campos.length == 1 && desplegable_campos.value == "inicial"){
-          info_asignacion.innerText = "Formulario configurado."
+        if (desplegable_campos.length == 1 && desplegable_campos.value == "inicial"){ //Si formulario configurado, guarda en local (storage)
+          
           autorrellenar.disabled = false;
           asignar.disabled = true;
+
+          chrome.storage.local.set({'contacto' : new XMLSerializer().serializeToString(formulario_modificado)}, function() { //guarda el form configurado en la extensión.
+            alert("formulario guardado");
+          });
+          
+          info_asignacion.innerText = "Formulario configurado.";
+          formularios_msg.innerText = "Listo para rellenar.";
+
         } else {
           info_asignacion.innerText = "Asignacion correcta al campo " + nombre_campo +".";
           alert(new XMLSerializer().serializeToString(formulario_activo));

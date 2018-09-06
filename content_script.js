@@ -2,14 +2,16 @@
 
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
   
-  if (msg.configurado == "si"){
-
+  if (chrome.storage.local.getBytesInUse(msg.formulario) > 0){ //entonces obtén el form del almacen local
+    let parser = new DOMParser();
+    let fichero_configurado = chrome.storage.local.get(msg.formulario);
+    let fichero_parseado = parser.parseFromString(fichero_configurado,"text/xml");
+    ejecutarAutorrellenado (fichero_parseado);
   } else {
-    getFormularioElegido(msg.formulario).then(function(fichero_xml){
+    getFormularioElegido(msg.formulario).then(function(fichero_xml){  //si no, pidelo al servidor
       ejecutarAutorrellenado(fichero_xml);
     });
   }
-
 })
 
 function ejecutarAutorrellenado(xml){
