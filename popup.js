@@ -10,7 +10,6 @@ conectar.onclick = conectaBD;
 var forms = document.getElementById("formularios");
 var formularios_msg = document.getElementById("formularios_label");
 var formulario_activo;
-var configurado;
 
 var asignar = document.getElementById("asignar");
 var configurar = document.getElementById("configurar");
@@ -74,19 +73,13 @@ function conectaBD(){
 }
 
 function rellena (){
-  if (forms.value == "Formulario1"){
-    configurado = "si";
-  } else {
-    configurado = "no";
-  }
-
   chrome.tabs.query({active: true, status: 'complete', currentWindow: true}, function (tabs){
     var activeTab = tabs[0];
     console.log(activeTab.url);
     
     chrome.tabs.executeScript(activeTab.id, {file: "content_script.js"}, function(){
     
-      chrome.tabs.sendMessage(activeTab.id, {"formulario": forms.value,"configurado": configurado})});
+      chrome.tabs.sendMessage(activeTab.id, {"formulario": forms.value})});
     });
 }
 
@@ -100,7 +93,7 @@ function getCamposFormulario (){
 
     for (var j = 0; j < campos.length; j++){
       opcion.text = campos[j].getElementsByTagName("descripcion")[0].childNodes[0].nodeValue;
-      if(opcion.text == "terminos"){
+      if(opcion.text == "Terminos"){
       } else {
         desplegable_campos.options[desplegable_campos.options.length] = new Option(opcion.text, j);
       }
@@ -113,8 +106,9 @@ function getCamposFormulario (){
 function compruebaCorreccion(form_activo){
   //Si selecciona contacto, comprobar que no haya un registro almacenado en chrome storage.
   //if yes, extrae el registro. else habilita configuracion.
-  let form_serializado = new XMLSerializer().serializeToString(formulario_activo);
-  /*alert(form_serializado);
+  /*alert(form_activo);
+  let form_serializado = new XMLSerializer().serializeToString(form_activo);
+  alert(form_serializado);
   let parser = new DOMParser();
   let form_parseao = parser.parseFromString(form_serializado, "text/xml");
   alert(form_parseao);
@@ -135,12 +129,6 @@ function compruebaCorreccion(form_activo){
       alert(r.form);
     });
   }*/
-
-  chrome.storage.local.getBytesInUse(['form'], function(bytes){
-    alert(bytes);
-  });
-  
-
 
   let tablas = form_activo.getElementsByTagName("tabla");
   let nombre = tablas[0].attributes.getNamedItem("valor").value;
@@ -271,17 +259,17 @@ function realizaAsignacion(){
           autorrellenar.disabled = false;
           asignar.disabled = true;
 
-          chrome.storage.local.set({'contacto' : new XMLSerializer().serializeToString(formulario_modificado)}, function() { //guarda el form configurado en la extensión.
+          chrome.storage.local.set({[forms.value] : new XMLSerializer().serializeToString(formulario_modificado)}, function() { //guarda el form configurado en la extensión.
             alert("formulario guardado");
           });
-          
+
           info_asignacion.innerText = "Formulario configurado.";
           formularios_msg.innerText = "Listo para rellenar.";
 
         } else {
           info_asignacion.innerText = "Asignacion correcta al campo " + nombre_campo +".";
-          alert(new XMLSerializer().serializeToString(formulario_activo));
-          alert(new XMLSerializer().serializeToString(formulario_modificado));
+          //alert(new XMLSerializer().serializeToString(formulario_activo));
+          //alert(new XMLSerializer().serializeToString(formulario_modificado));
         }
       }
     }

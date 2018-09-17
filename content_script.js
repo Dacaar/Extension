@@ -1,23 +1,35 @@
 'use strict';
 
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
-  
-  if (chrome.storage.local.getBytesInUse(msg.formulario) > 0){ //entonces obtén el form del almacen local
-    let parser = new DOMParser();
-    let fichero_configurado = chrome.storage.local.get(msg.formulario);
-    let fichero_parseado = parser.parseFromString(fichero_configurado,"text/xml");
-    ejecutarAutorrellenado (fichero_parseado);
-  } else {
-    getFormularioElegido(msg.formulario).then(function(fichero_xml){  //si no, pidelo al servidor
-      ejecutarAutorrellenado(fichero_xml);
-    });
-  }
+  chrome.storage.local.getBytesInUse([msg.formulario], function(bytes){
+    if (bytes > 0){ //entonces obtén el form del almacen local
+      let parser = new DOMParser();
+      let fichero_configurado;
+      let fichero_parseado;
+      //Obtiene el form del storage, lo guarda y lo parsea. Tras esto, ejecuta el autorrellenado.
+      chrome.storage.local.get("Formulario1", function(respuesta){
+        //alert("soy la respuesta" + respuesta.Formulario1);
+        fichero_configurado = respuesta.Formulario1;
+        //alert ("soy el fichero" + fichero_configurado);
+        fichero_parseado = parser.parseFromString(fichero_configurado,"text/xml");
+        //alert("soy el parseao" + fichero_parseado);
+        let fichero_string = new XMLSerializer().serializeToString(fichero_parseado);
+        //alert("soy el xml en string" + fichero_string);
+        ejecutarAutorrellenado (fichero_parseado);
+      });
+    } else {
+      getFormularioElegido(msg.formulario).then(function(fichero_xml){  //si no, pidelo al servidor
+        ejecutarAutorrellenado(fichero_xml);
+      });
+    }
+  });
 })
 
 function ejecutarAutorrellenado(xml){
     let tablas = xml.getElementsByTagName("tabla"); //Esto recibe todos los nodos tabla (una colección).
     let objeto_parseado;
-
+    
+    alert ("estoy dentro");
     for (var i = 0; i < tablas.length; i++){  //Recorre las tablas de la BBDD que se usaran en el form.
       //Obtiene el valor del atributo "valor" de la tabla cuyo índice es i.
       let nombre = tablas[i].attributes.getNamedItem("valor").value;
