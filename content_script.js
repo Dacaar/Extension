@@ -13,7 +13,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
         //alert ("soy el fichero" + fichero_configurado);
         fichero_parseado = parser.parseFromString(fichero_configurado,"text/xml");
         //alert("soy el parseao" + fichero_parseado);
-        let fichero_string = new XMLSerializer().serializeToString(fichero_parseado);
+        //let fichero_string = new XMLSerializer().serializeToString(fichero_parseado);
         //alert("soy el xml en string" + fichero_string);
         ejecutarAutorrellenado (fichero_parseado);
       });
@@ -29,7 +29,6 @@ function ejecutarAutorrellenado(xml){
     let tablas = xml.getElementsByTagName("tabla"); //Esto recibe todos los nodos tabla (una colección).
     let objeto_parseado;
     
-    alert ("estoy dentro");
     for (var i = 0; i < tablas.length; i++){  //Recorre las tablas de la BBDD que se usaran en el form.
       //Obtiene el valor del atributo "valor" de la tabla cuyo índice es i.
       let nombre = tablas[i].attributes.getNamedItem("valor").value;

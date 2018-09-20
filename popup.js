@@ -17,6 +17,11 @@ var desplegable_campos = document.getElementById("campos");
 var desplegable_tablas = document. getElementById("tablas");
 var desplegable_atributos = document.getElementById("atributos");
 
+//Las tres secciones principales del html de la extension.
+var div_login = document.getElementById("login");
+var div_autorrellenado = document.getElementById("autorrellenado");
+var div_configuracion = document.getElementById("configuracion");
+
 forms.onchange = function(){
   getFormularioElegido(forms.value).then(function(form_elegido){
     compruebaCorreccion(form_elegido);
@@ -63,7 +68,9 @@ function conectaBD(){
 
   request.onreadystatechange = function() {//Call a function when the state changes.
     if(request.readyState == XMLHttpRequest.DONE && request.status == 200) {
-      mensaje.innerHTML = "Conectado a la base de datos.";
+      mensaje.innerHTML = "Conectado satisfactoriamente.";
+      div_login.style.display = "none";
+      div_autorrellenado.style.display = "block";
       forms.disabled = false;
       conectar.disabled = true;
       textbox.disabled = true;
@@ -130,13 +137,27 @@ function compruebaCorreccion(form_activo){
     });
   }*/
 
+  //Debe comprobarse si existe form guardado en local, si existe, esta completo, si no puede necesitar configuracion.
   let tablas = form_activo.getElementsByTagName("tabla");
   let nombre = tablas[0].attributes.getNamedItem("valor").value;
 
   if (nombre == "no definida"){
-    formularios_msg.innerHTML = "Formulario incompleto, configure antes de rellenar.";
-    autorrellenar.disabled = true;
-    configurar.disabled = false;
+    if (forms.value == "Formulario1"){
+      chrome.storage.local.getBytesInUse(["Formulario"], function(bytes){
+        if(bytes > 0){
+          "Rellene ahora!!!";
+          autorrellenar.disabled = false;
+          configurar.disabled = true;
+          desplegable_atributos.disabled = true;
+          desplegable_campos.disabled = true;
+          desplegable_tablas.disabled = true;
+        } else {
+          formularios_msg.innerHTML = "Formulario incompleto, configure antes de rellenar.";
+          autorrellenar.disabled = true;
+          configurar.disabled = false;
+        }
+      });
+    }    
   } else {
     formularios_msg.innerHTML = "Rellene ahora!!!";
     autorrellenar.disabled = false;
@@ -148,6 +169,8 @@ function compruebaCorreccion(form_activo){
 }
 
 function activaConfiguracion(){
+  div_autorrellenado.style.display = "none";
+  div_configuracion.style.display = "block";
   asignar.disabled = false;
   desplegable_campos.disabled = false;
   desplegable_atributos.disabled = false;
@@ -262,9 +285,10 @@ function realizaAsignacion(){
           chrome.storage.local.set({[forms.value] : new XMLSerializer().serializeToString(formulario_modificado)}, function() { //guarda el form configurado en la extensión.
             alert("formulario guardado");
           });
-
-          info_asignacion.innerText = "Formulario configurado.";
-          formularios_msg.innerText = "Listo para rellenar.";
+          
+          div_configuracion.style.display = "none";
+          div_autorrellenado.style.display = "block";
+          formularios_msg.innerText = "Formulario configurado y guardado. Listo para rellenar.";
 
         } else {
           info_asignacion.innerText = "Asignacion correcta al campo " + nombre_campo +".";
