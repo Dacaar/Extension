@@ -2,6 +2,7 @@
 
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
   chrome.storage.local.getBytesInUse([msg.formulario], function(bytes){
+    let instancia = msg.id;
     if (bytes > 0){ //entonces obtén el form del almacen local
       let parser = new DOMParser();
       let fichero_configurado;
@@ -15,17 +16,17 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
         //alert("soy el parseao" + fichero_parseado);
         //let fichero_string = new XMLSerializer().serializeToString(fichero_parseado);
         //alert("soy el xml en string" + fichero_string);
-        ejecutarAutorrellenado (fichero_parseado);
+        ejecutarAutorrellenado (fichero_parseado, instancia);
       });
     } else {
       getFormularioElegido(msg.formulario).then(function(fichero_xml){  //si no, pidelo al servidor
-        ejecutarAutorrellenado(fichero_xml);
+        ejecutarAutorrellenado(fichero_xml, instancia);
       });
     }
   });
 })
 
-function ejecutarAutorrellenado(xml){
+function ejecutarAutorrellenado(xml, indice){
     let tablas = xml.getElementsByTagName("tabla"); //Esto recibe todos los nodos tabla (una colección).
     let objeto_parseado;
     
@@ -36,8 +37,7 @@ function ejecutarAutorrellenado(xml){
       //Obtenemos un objeto de la tabla del servidor, con índice arbitrario (Dado por mí).
 
       let campos = tablas[i].getElementsByTagName("campo");
-      //alert("campos1"+campos)
-      getElemento(nombre).then(function(objeto){
+      getElemento(nombre, indice).then(function(objeto){
         objeto_parseado = JSON.parse(objeto);
 
         //Obtenemos todos los campos asociados a la tabla i.
@@ -86,12 +86,12 @@ function ejecutarAutorrellenado(xml){
   }
 
   //Obtiene por peticion REST la instancia elegida de la tabla en cuestion con todos sus atributos.
-function getElemento(elemento){
+function getElemento(elemento, id){
   return new Promise(resolve => {
     let request = new XMLHttpRequest();
     let params = "http://localhost:49787/api/";
     let objeto_obtenido;
-    
+
     request.onreadystatechange = function() {
       if (request.readyState == 4 && request.status == 200) {
         objeto_obtenido = request.responseText;
@@ -99,7 +99,11 @@ function getElemento(elemento){
       }
     };
     
-    request.open("GET", params + elemento + "/1", true)
+    if (elemento == "persona"){
+      request.open("GET", params + elemento + "/" + id, true)
+    } else {
+      request.open("GET", params + elemento + "/" + "1", true)
+    }
     request.send();
   })
 }

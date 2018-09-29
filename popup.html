@@ -39,7 +39,7 @@
         }
         #mensaje {
           position: absolute;
-          top: 175px;
+          top: 135px;
           left: 5px;
         }
         #username_label{
@@ -75,6 +75,11 @@
           width: 90px;
         }
         #formularios {
+          position: relative;
+          left: 50px;
+        }
+
+        #elementos {
           position: relative;
           left: 100px;
         }
@@ -113,9 +118,12 @@
           <label for="formularios" id="formularios_label">Seleccione formulario</label>
           <label id="mensaje"></label>
           <select id="formularios" disabled>
-            <option value="">Elija...</option>
+            <option value="inicial">Elija...</option>
             <option value="Formulario1">Contacto</option>
             <option value="Formulario2">Reserva</option>
+          </select>
+          <select id="elementos" disabled>
+            <option value="inicial">Elija elemento...</option>
           </select>
           <button id="configurar" disabled type="button" class="configuracion">Configurar</button>
       </div>

@@ -17,6 +17,9 @@ var desplegable_campos = document.getElementById("campos");
 var desplegable_tablas = document. getElementById("tablas");
 var desplegable_atributos = document.getElementById("atributos");
 
+//la instancia de datos utilizada para rellenar el form.
+var instancia = document.getElementById("elementos");
+
 //Las tres secciones principales del html de la extension.
 var div_login = document.getElementById("login");
 var div_autorrellenado = document.getElementById("autorrellenado");
@@ -58,6 +61,7 @@ function conectaBD(){
   var textbox = document.getElementById('username');
   let params = '{"username":"';
   let request = new XMLHttpRequest();
+  chrome.storage.local.clear();
 
   params = params + textbox.value + '"}';
 
@@ -80,14 +84,19 @@ function conectaBD(){
 }
 
 function rellena (){
-  chrome.tabs.query({active: true, status: 'complete', currentWindow: true}, function (tabs){
-    var activeTab = tabs[0];
-    console.log(activeTab.url);
-    
-    chrome.tabs.executeScript(activeTab.id, {file: "content_script.js"}, function(){
-    
-      chrome.tabs.sendMessage(activeTab.id, {"formulario": forms.value})});
-    });
+  if (instancia.value == "inicial") {
+    formularios_msg.innerText = "Debe seleccionar la instancia de rellenado.";
+  } else {
+    let indice = instancia.options[instancia.selectedIndex].index;
+
+    chrome.tabs.query({active: true, status: 'complete', currentWindow: true}, function (tabs){
+      var activeTab = tabs[0];     
+      chrome.tabs.executeScript(activeTab.id, {file: "content_script.js"}, function(){
+        //Formulario es el nombre del formulario que debe rellenarse, el id es el indice para buscar
+        //la instancia con la que rellenar en la base de datos.
+        chrome.tabs.sendMessage(activeTab.id, {"formulario": forms.value, "id": indice})});
+      });
+  }
 }
 
 function getCamposFormulario (){
@@ -109,6 +118,21 @@ function getCamposFormulario (){
   }  
 }
 
+function getTodasInstancias(tabla){
+  return new Promise(resolve => {
+    let request = new XMLHttpRequest();
+    let params = "http://localhost:49787/api/" + tabla + "/";
+    
+    request.onreadystatechange = function() {
+      if (request.readyState == 4 && request.status == 200) {
+        resolve(request.responseText);
+      }
+    };
+    
+    request.open("GET", params, true)
+    request.send();
+  })
+}
 //Función de test de rellenado correcto.
 function compruebaCorreccion(form_activo){
   //Si selecciona contacto, comprobar que no haya un registro almacenado en chrome storage.
@@ -120,8 +144,6 @@ function compruebaCorreccion(form_activo){
   let form_parseao = parser.parseFromString(form_serializado, "text/xml");
   alert(form_parseao);
   alert(new XMLSerializer().serializeToString(form_parseao));*/
-  chrome.storage.local.clear();
-
 
   /*chrome.storage.local.getBytesInUse(['form'], function(bytes){
     alert(bytes);
@@ -143,14 +165,26 @@ function compruebaCorreccion(form_activo){
 
   if (nombre == "no definida"){
     if (forms.value == "Formulario1"){
-      chrome.storage.local.getBytesInUse(["Formulario"], function(bytes){
+      chrome.storage.local.getBytesInUse(["Formulario1"], function(bytes){
         if(bytes > 0){
-          "Rellene ahora!!!";
+          formularios_msg.innerHTML = "Formulario listo. Rellene ahora!!!";
           autorrellenar.disabled = false;
           configurar.disabled = true;
           desplegable_atributos.disabled = true;
           desplegable_campos.disabled = true;
           desplegable_tablas.disabled = true;
+          instancia.disabled = false;
+
+          getTodasInstancias(nombre).then(function(lista_instancias){
+            let instancias_parseadas = JSON.parse(lista_instancias);
+            let opcion = document.createElement("option");
+        
+            for (var i in instancias_parseadas){
+              opcion.text = instancias_parseadas[i].nif;
+              instancia.options[instancia.options.length] = new Option(opcion.text, i);
+            }
+          });
+
         } else {
           formularios_msg.innerHTML = "Formulario incompleto, configure antes de rellenar.";
           autorrellenar.disabled = true;
@@ -165,6 +199,17 @@ function compruebaCorreccion(form_activo){
     desplegable_atributos.disabled = true;
     desplegable_campos.disabled = true;
     desplegable_tablas.disabled = true;
+    instancia.disabled = false;
+
+    getTodasInstancias(nombre).then(function(lista_instancias){
+      let instancias_parseadas = JSON.parse(lista_instancias);
+      let opcion = document.createElement("option");
+  
+      for (var i in instancias_parseadas){
+        opcion.text = instancias_parseadas[i].nif;
+        instancia.options[instancia.options.length] = new Option(opcion.text, i);
+      }
+    });
   }
 }
 
@@ -281,13 +326,25 @@ function realizaAsignacion(){
           
           autorrellenar.disabled = false;
           asignar.disabled = true;
-
+          
           chrome.storage.local.set({[forms.value] : new XMLSerializer().serializeToString(formulario_modificado)}, function() { //guarda el form configurado en la extensión.
             alert("formulario guardado");
           });
           
+          instancia.disabled = false;
           div_configuracion.style.display = "none";
           div_autorrellenado.style.display = "block";
+
+          getTodasInstancias(tablas_formulario[0].attributes.getNamedItem("valor").value).then(function(lista_instancias){
+            let instancias_parseadas = JSON.parse(lista_instancias);
+            let opcion = document.createElement("option");
+        
+            for (var i in instancias_parseadas){
+              opcion.text = instancias_parseadas[i].nif;
+              instancia.options[instancia.options.length] = new Option(opcion.text, i);
+            }
+          });
+
           formularios_msg.innerText = "Formulario configurado y guardado. Listo para rellenar.";
 
         } else {
@@ -312,3 +369,6 @@ function realizaAsignacion(){
 //IDFORM
 //RUTA DE ARCHIVO XML
 //LEE LA CADENA DE CONEXION A LA BBDD Y SE CONECTA A ELLA, TODO EN EL SERVIDOR WEB.
+
+//Hacer más bonita la interfaz.
+//Intentar solucionar error de BBDD en el servidor. 
