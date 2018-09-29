@@ -37,14 +37,20 @@ var info_asignacion = document.getElementById("info_asignaciones");
 
 desplegable_tablas.onchange = function(){
   let indice = desplegable_tablas.value;
-  getAtributos(indice).then(function(atributos){
-    let atributos_parseados = JSON.parse(atributos);
-    let opcion = document.createElement("option");
-    for (var i in atributos_parseados){
-      opcion.text = atributos_parseados[i].nombre;
-      desplegable_atributos.options[desplegable_atributos.options.length] = new Option(opcion.text, i);
-    }
-  });
+  //Este while resetea el contenido del desplegable.
+  while (desplegable_atributos.options.length > 1) {
+    desplegable_atributos.remove(1);
+  }
+  if (indice != "inicial"){
+    getAtributos(indice).then(function(atributos){
+      let atributos_parseados = JSON.parse(atributos);
+      let opcion = document.createElement("option");
+      for (let i = 0; i < atributos_parseados.length; i++){
+        opcion.text = atributos_parseados[i].nombre;
+        desplegable_atributos.options[desplegable_atributos.options.length] = new Option(opcion.text, i);
+      }
+    });
+  }
 }
 
 asignar.onclick = realizaAsignacion;
@@ -87,7 +93,7 @@ function rellena (){
   if (instancia.value == "inicial") {
     formularios_msg.innerText = "Debe seleccionar la instancia de rellenado.";
   } else {
-    let indice = instancia.options[instancia.selectedIndex].index;
+    let indice = instancia.selectedIndex;
 
     chrome.tabs.query({active: true, status: 'complete', currentWindow: true}, function (tabs){
       var activeTab = tabs[0];     
@@ -186,9 +192,15 @@ function compruebaCorreccion(form_activo){
           });
 
         } else {
+
+          while (instancia.options.length > 1) {
+            instancia.remove(1);
+          }
+
           formularios_msg.innerHTML = "Formulario incompleto, configure antes de rellenar.";
           autorrellenar.disabled = true;
           configurar.disabled = false;
+          instancia.disabled = true;
         }
       });
     }    
@@ -200,6 +212,10 @@ function compruebaCorreccion(form_activo){
     desplegable_campos.disabled = true;
     desplegable_tablas.disabled = true;
     instancia.disabled = false;
+
+    while (instancia.options.length > 1) {
+      instancia.remove(1);
+    }
 
     getTodasInstancias(nombre).then(function(lista_instancias){
       let instancias_parseadas = JSON.parse(lista_instancias);
@@ -221,6 +237,7 @@ function activaConfiguracion(){
   desplegable_atributos.disabled = false;
   desplegable_tablas.disabled = false;
   
+  //Las dos siguientes lineas es para crear una nueva instancia de formulario, y no una referencia.
   let form_enString = new XMLSerializer().serializeToString(formulario_activo);
   formulario_modificado = new DOMParser().parseFromString(form_enString,"text/xml");
 
@@ -300,12 +317,14 @@ function realizaAsignacion(){
   let tablas_formulario = formulario_modificado.getElementsByTagName("tabla");
   let campos_formulario = tablas_formulario[0].getElementsByTagName("campo");
   let nombre_campo;
+  let nombre_tabla;
   //Si algun valor no está seleccionado entonces...
   if (desplegable_campos.value == "inicial" || desplegable_tablas.value == "inicial" || desplegable_atributos.value == "inicial"){
     info_asignacion.innerText = "Debe seleccionar un valor correcto en cada desplegable.";
   } else {
     configurar.disabled = true;
-    nombre_campo = desplegable_campos.selectedIndex.text;
+    nombre_campo = desplegable_campos.options[desplegable_campos.selectedIndex].text;
+    nombre_tabla = desplegable_tablas.options[desplegable_tablas.selectedIndex].text;
 
     if (tablas_formulario.length == 1){//Si en el form solo hay una tabla, entonces no se permite cambiar de tabla durante la asignación.
       if (tablas_formulario[0].attributes.getNamedItem("valor").value == "no definida"){
@@ -328,7 +347,6 @@ function realizaAsignacion(){
           asignar.disabled = true;
           
           chrome.storage.local.set({[forms.value] : new XMLSerializer().serializeToString(formulario_modificado)}, function() { //guarda el form configurado en la extensión.
-            alert("formulario guardado");
           });
           
           instancia.disabled = false;
@@ -340,7 +358,8 @@ function realizaAsignacion(){
             let opcion = document.createElement("option");
         
             for (var i in instancias_parseadas){
-              opcion.text = instancias_parseadas[i].nif;
+                opcion.text = instancias_parseadas[i].nif;
+              
               instancia.options[instancia.options.length] = new Option(opcion.text, i);
             }
           });
@@ -372,3 +391,4 @@ function realizaAsignacion(){
 
 //Hacer más bonita la interfaz.
 //Intentar solucionar error de BBDD en el servidor. 
+//Ver tema de si configuro con reserva obtener la unica instancia de ella, y no undefined.
