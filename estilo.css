@@ -1,0 +1,118 @@
+body {
+    height: 200px;
+    width: 400px;
+    background-color: #FAFAD2;
+  }
+  h3 {
+    color: #696969;
+    border-bottom: double;
+    border-bottom-color: #696969;
+    font-size: 16px;
+    font-style: italic;
+  }
+  input[type=text] {
+    width: 70%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  div{
+    position: absolute;
+    top: 50px;
+    height: 150px;
+    width: 450px;
+  }
+  button{
+    background-color: rgb(155, 210, 255);
+    border: none;
+    color: black;
+    padding: 10px 24px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition-duration: 0.3s;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  button:hover{
+    background-color: rgb(50, 150, 231);
+    color: white;
+  }
+  button:disabled{
+    background-color: rgb(202, 205, 207);
+    color: black;
+    cursor: not-allowed;
+  }
+  #mensaje {
+    position: absolute;
+    top: 135px;
+    left: 5px;
+  }
+  #username_label{
+    position: absolute;
+    top: 70px;
+    left: 0%;
+  }
+  #username{
+    position: absolute;
+    top: 50px;
+    left: 25%;
+    width: 50%;
+  }
+  #formularios_label{
+    position: absolute;
+    top: 50px;
+    left: 5px;
+  }
+  #configurar{
+    position: absolute;
+    top: 100px;
+    left: 250px;
+  }
+  input[type=button].login {
+    position: absolute;
+    height: 30px;
+    width: 75px;
+    left: 5px;
+  }
+  input[type=button].autorrellenado {
+    position: absolute;
+    top: 80px;
+    height: 30px;
+    width: 90px;
+  }
+  #formularios {
+    position: relative;
+    left: 20px;
+  }
+
+  #elementos {
+    position: relative;
+    left: 30px;
+  }
+  #info_asignaciones{
+    position: absolute;
+    top: 50px;
+    left: 5px;
+  }
+  #campos{
+    width: 150px;
+  }
+
+  #tablas{
+    position: relative;
+    left: 5px;
+  }
+  #atributos{
+    position: relative;
+    left: 5px;
+  }
+  label{
+    height: 500px;
+    max-width: 500px;
+  }

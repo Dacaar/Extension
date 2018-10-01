@@ -1,110 +1,8 @@
 <!DOCTYPE html>
   <html>
     <head>
-      <style>
-        body {
-          height: 200px;
-          width: 450px;
-        }
-        input[type=text] {
-          width: 70%;
-          padding: 12px 20px;
-          margin: 8px 0;
-          display: inline-block;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-          box-sizing: border-box;
-        }
-        #login{
-          border: 2px solid royalblue;
-          position: absolute;
-          top: 50px;
-          border-radius: 5px;
-          height: 150px;
-          width: 450px;
-        }
-        #autorrellenado{
-          border: 2px solid royalblue;
-          position: absolute;
-          top: 50px;
-          height: 150px;
-          width: 450px;
-        }
-        #configuracion{
-          border: 2px solid royalblue;
-          position: absolute;
-          top: 50px;
-          height: 150px;
-          width: 450px;
-        }
-        #mensaje {
-          position: absolute;
-          top: 135px;
-          left: 5px;
-        }
-        #username_label{
-          position: absolute;
-          top: 50px;
-          left: 0%;
-        }
-        #username{
-          position: absolute;
-          top: 30px;
-          left: 30%;
-        }
-        #formularios_label{
-          position: absolute;
-          top: 50px;
-          left: 5px;
-        }
-        #configurar{
-          position: absolute;
-          top: 100px;
-          left: 355px;
-        }
-        input[type=button].login {
-          position: absolute;
-          height: 30px;
-          width: 75px;
-          left: 20%;
-        }
-        input[type=button].autorrellenado {
-          position: absolute;
-          top: 80px;
-          height: 30px;
-          width: 90px;
-        }
-        #formularios {
-          position: relative;
-          left: 50px;
-        }
-
-        #elementos {
-          position: relative;
-          left: 100px;
-        }
-        #info_asignaciones{
-          position: absolute;
-          top: 50px;
-          left: 5px;
-        }
-        #campos{
-          width: 150px;
-        }
-
-        #tablas{
-          position: relative;
-          left: 5px;
-        }
-        #atributos{
-          position: relative;
-          left: 5px;
-        }
-        label{
-          height: 500px;
-          max-width: 500px;
-        }
-      </style>
+      <title>Rellena.me</title>
+      <link rel="stylesheet" href="estilo.css">
     </head>
     <body>
       <h3>Rellena.me</h3>
@@ -138,7 +36,7 @@
         <select id="atributos" disabled>
           <option value="inicial">Elija atributos...</option>
         </select>
-        <label id="info_asignaciones">eh</label>
+        <label id="info_asignaciones">Asigne campo a campo cada valor que debe ir en el formulario.</label>
       </div>
       <script src="popup.js"></script>
     </body>
