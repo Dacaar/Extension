@@ -33,7 +33,7 @@ body {
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 16px;
+    font-size: 14px;
     margin: 4px 2px;
     transition-duration: 0.3s;
     cursor: pointer;
@@ -73,6 +73,29 @@ body {
     position: absolute;
     top: 100px;
     left: 250px;
+    width: 130px;
+  }
+  #configurar span{
+    position: relative;
+    transition: 0.3s;
+    color: black;
+  }
+  #configurar span:after{
+    content: '\00bb';
+    right: -10px;
+    position: absolute;
+    transition: 0.3s;
+    opacity: 0;
+    color: white;
+  }
+  #configurar:hover:enabled span{
+    padding-right: 15px;
+    color: white;
+  }
+  #configurar:hover:enabled span:after{
+    right:-15px;
+    opacity:1;
+    right: 0;
   }
   input[type=button].login {
     position: absolute;
@@ -97,20 +120,27 @@ body {
   }
   #info_asignaciones{
     position: absolute;
-    top: 50px;
+    top: 130px;
     left: 5px;
   }
   #campos{
-    width: 150px;
-  }
-
-  #tablas{
-    position: relative;
+    position: absolute;
+    width: 105px;
+    top: 60px;
     left: 5px;
+  }
+  #tablas{
+    position: absolute;
+    width: 105px;
+    top: 60px;
+    left: 115px;
   }
   #atributos{
-    position: relative;
-    left: 5px;
+    position: absolute;
+    width: 105px;
+    left: 225px;
+    top: 60px;
+
   }
   label{
     height: 500px;
