@@ -13,10 +13,10 @@
       </div>
       <div id="autorrellenado" style="display: none">
           <button id="autorrellena" disabled type="button" class="autorrellenado">Autorrellena</button>
-          <label for="formularios" id="formularios_label">Seleccione formulario</label>
+          <label for="formularios" id="formularios_label">Seleccione formulario en el desplegable verde.</label>
           <label id="mensaje"></label>
           <select id="formularios" disabled>
-            <option value="inicial">Elija...</option>
+            <option value="inicial">Formulario</option>
             <option value="Formulario1">Contacto</option>
             <option value="Formulario2">Reserva</option>
           </select>
@@ -27,13 +27,13 @@
       </div>
       <div id="configuracion" style="display: none">
         <button id="asignar" disabled type="button" class="configuracion">Asignar</button>
-        <select id="campos" disabled>
+        <select id="campos" class="configuracion" disabled>
           <option value="inicial">Elija campo</option>
         </select>
-        <select id="tablas" disabled>
+        <select id="tablas" class="configuracion" disabled>
           <option value="inicial">Elija tabla</option>
         </select>
-        <select id="atributos" disabled>
+        <select id="atributos" class="configuracion" disabled>
           <option value="inicial">Elija atributos</option>
         </select>
         <label id="info_asignaciones">Asigne campo a campo cada valor que debe ir en el formulario.</label>

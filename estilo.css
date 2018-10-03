@@ -7,8 +7,8 @@ body {
     color: #696969;
     border-bottom: double;
     border-bottom-color: #696969;
-    font-size: 16px;
-    font-style: italic;
+    font-size: 18px;
+    font-family:"Old English Text MT";
   }
   input[type=text] {
     width: 70%;
@@ -112,35 +112,68 @@ body {
   #formularios {
     position: relative;
     left: 20px;
+    font-weight: bold;
+    overflow: auto;
+    width: 100px;
+    -moz-border-radius: 9px 9px 9px 9px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    box-shadow: 1px 1px 5px #330033;
+    background: palegreen;
   }
-
   #elementos {
     position: relative;
     left: 30px;
+    width: 120px;
   }
   #info_asignaciones{
     position: absolute;
     top: 130px;
     left: 5px;
   }
-  #campos{
+
+  select.configuracion, #elementos{
+    -webkit-appearance: button;
+    -webkit-border-radius: 2px;
+    -webkit-box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+    -webkit-padding-end: 20px;
+    -webkit-padding-start: 2px;
+    -webkit-user-select: none;
+    background-image: url(http://i62.tinypic.com/15xvbd5.png), -webkit-linear-gradient(#FAFAFA, #F4F4F4 40%, #E5E5E5);
+    background-position: 97% center;
+    background-repeat: no-repeat;
+    border: 1px solid rgb(87, 87, 87);
+    color: black;
+    font-size: 12px;
+    overflow: hidden;
+    padding: 5px 5px;
+    white-space: nowrap;
+  }
+
+  select.configuracion:disabled, #elementos:disabled{
+    color: rgb(146, 146, 146);
+    cursor: not-allowed;
+    border: 1px solid rgb(190, 190, 190);
+  }
+
+  #campos {
     position: absolute;
-    width: 105px;
+    width: 115px;
     top: 60px;
     left: 5px;
-  }
+ }
+ 
   #tablas{
     position: absolute;
-    width: 105px;
+    width: 115px;
     top: 60px;
-    left: 115px;
+    left: 125px;
   }
   #atributos{
     position: absolute;
-    width: 105px;
-    left: 225px;
+    width: 115px;
+    left: 245px;
     top: 60px;
-
   }
   label{
     height: 500px;
