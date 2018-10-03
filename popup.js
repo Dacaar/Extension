@@ -26,6 +26,7 @@ var div_autorrellenado = document.getElementById("autorrellenado");
 var div_configuracion = document.getElementById("configuracion");
 
 forms.onchange = function(){
+  configurar.disabled = true;
   getFormularioElegido(forms.value).then(function(form_elegido){
     compruebaCorreccion(form_elegido);
   });
@@ -368,8 +369,6 @@ function realizaAsignacion(){
 
         } else {
           info_asignacion.innerText = "Asignacion correcta al campo " + nombre_campo +".";
-          //alert(new XMLSerializer().serializeToString(formulario_activo));
-          //alert(new XMLSerializer().serializeToString(formulario_modificado));
         }
       }
     }
@@ -389,6 +388,5 @@ function realizaAsignacion(){
 //RUTA DE ARCHIVO XML
 //LEE LA CADENA DE CONEXION A LA BBDD Y SE CONECTA A ELLA, TODO EN EL SERVIDOR WEB.
 
-//Hacer más bonita la interfaz.
 //Intentar solucionar error de BBDD en el servidor. 
 //Ver tema de si configuro con reserva obtener la unica instancia de ella, y no undefined.
