@@ -48,11 +48,73 @@ body {
     color: black;
     cursor: not-allowed;
   }
-  #mensaje {
+  .ayuda {
     position: absolute;
     top: 135px;
     left: 5px;
+    text-decoration: underline;
+    color: rgb(79, 167, 226);
+    cursor: pointer;
+    border-color: black;
+    height: 10px;
+    width: 20px;
   }
+
+  /* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: absolute; /* Stay in place */
+  top:0;
+  left: 0;
+  z-index: 1; /* Sit on top */
+  height: 150px;
+  width: 400px;
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: rgb(201, 216, 241);
+  border: 1px solid #888;
+  left: 40px;
+  top: 15px;
+  right: 40px;
+  bottom: 15px;
+  width: 80%;
+  height: 80%;
+  -webkit-animation-name: animatetop;
+  -webkit-animation-duration: 0.3s;
+  animation-name: animatetop;
+  animation-duration: 0.3s
+}
+
+@-webkit-keyframes animatetop {
+  from {top:-300px; opacity:0} 
+  to {top:0; opacity:1}
+}
+
+@keyframes animatetop {
+  from {top:-300px; opacity:0}
+  to {top:0; opacity:1}
+}
+
+/* The Close Button */
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+  }
+
   #username_label{
     position: absolute;
     top: 70px;
@@ -128,8 +190,14 @@ body {
   }
   #info_asignaciones{
     position: absolute;
-    top: 130px;
     left: 5px;
+    height: 15px;
+  }
+
+  #asignar{
+    position: absolute;
+    top: 100px;
+    left: 280px;
   }
 
   select.configuracion, #elementos{

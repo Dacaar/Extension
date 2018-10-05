@@ -12,9 +12,17 @@
         <input type="text" id="username" name="usuario" placeholder="Escriba su nombre de usuario"/>
       </div>
       <div id="autorrellenado" style="display: none">
-          <button id="autorrellena" disabled type="button" class="autorrellenado">Autorrellena</button>
-          <label for="formularios" id="formularios_label">Seleccione formulario en el desplegable verde.</label>
-          <label id="mensaje"></label>
+          <button id ="autorrellena" disabled type="button" class="autorrellenado">Autorrellena</button>
+          <label for ="formularios" id="formularios_label">Seleccione formulario en el desplegable verde.</label>
+          <label id ="ayuda_autorrellenado" class = "ayuda">Ayuda</label>
+          <div class="modal" id="modal_autorrellenado">
+            <!-- Modal content autorrellenado-->
+            <div class="modal-content">
+              <span class="close" id="close_auto">&times;</span>
+              <p>Primero seleccione el formulario que desee rellenar, luego indique la instancia con la que hacerlo y pulse "Autorrellena".
+                Si el formulario no se encuentra configurado, debe pulsar "Configurar".</p>
+            </div>
+          </div>
           <select id="formularios" disabled>
             <option value="inicial">Formulario</option>
             <option value="Formulario1">Contacto</option>
@@ -37,6 +45,17 @@
           <option value="inicial">Elija atributos</option>
         </select>
         <label id="info_asignaciones">Asigne campo a campo cada valor que debe ir en el formulario.</label>
+        <label id = "ayuda_configuracion" class = "ayuda">Ayuda</label>
+        <div class="modal" id="modal_configuracion">
+          <!-- Modal content configuracion -->
+          <div class="modal-content">
+            <span class="close" id="close_config">&times;</span>
+            <p>El primer desplegable contiene los campos del formulario. El segundo contiene las tablas de
+              su base de datos. El tercero los atributos de la tabla elegida. Asigne a cada campo un valor (atributo) y presione "Asignar".
+              Tenga en cuenta que una vez seleccione una tabla no puede ser cambiada.
+            </p>
+          </div>
+        </div>
       </div>
       <script src="popup.js"></script>
     </body>

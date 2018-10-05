@@ -56,7 +56,29 @@ desplegable_tablas.onchange = function(){
 
 asignar.onclick = realizaAsignacion;
 
+var ayuda_auto = document.getElementById("ayuda_autorrellenado");
+var modal_auto = document.getElementById("modal_autorrellenado");
+var cerrar_auto = document.getElementById("close_auto");
 
+var ayuda_config = document.getElementById("ayuda_configuracion");
+var modal_config = document.getElementById("modal_configuracion");
+var cerrar_config = document.getElementById("close_config");
+
+ayuda_auto.onclick = function() {
+  modal_auto.style.display = "block";
+}
+
+ayuda_config.onclick = function(){
+  modal_config.style.display = "block";
+}
+
+cerrar_auto.onclick = function (){
+  modal_auto.style.display = "none";
+}
+
+cerrar_config.onclick = function (){
+  modal_config.style.display = "none";
+}
 
 var autorrellenar = document.getElementById('autorrellena');
 autorrellenar.onclick = rellena;
@@ -64,7 +86,6 @@ autorrellenar.onclick = rellena;
 
 
 function conectaBD(){
-  let mensaje = document.getElementById('mensaje');
   var textbox = document.getElementById('username');
   let params = '{"username":"';
   let request = new XMLHttpRequest();
@@ -79,7 +100,6 @@ function conectaBD(){
 
   request.onreadystatechange = function() {//Call a function when the state changes.
     if(request.readyState == XMLHttpRequest.DONE && request.status == 200) {
-      mensaje.innerHTML = "Conectado satisfactoriamente.";
       div_login.style.display = "none";
       div_autorrellenado.style.display = "block";
       forms.disabled = false;
