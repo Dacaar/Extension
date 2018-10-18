@@ -9,13 +9,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
       let fichero_parseado;
       //Obtiene el form del storage, lo guarda y lo parsea. Tras esto, ejecuta el autorrellenado.
       chrome.storage.local.get("Formulario1", function(respuesta){
-        //alert("soy la respuesta" + respuesta.Formulario1);
         fichero_configurado = respuesta.Formulario1;
-        //alert ("soy el fichero" + fichero_configurado);
         fichero_parseado = parser.parseFromString(fichero_configurado,"text/xml");
-        //alert("soy el parseao" + fichero_parseado);
-        //let fichero_string = new XMLSerializer().serializeToString(fichero_parseado);
-        //alert("soy el xml en string" + fichero_string);
         ejecutarAutorrellenado (fichero_parseado, instancia);
       });
     } else {

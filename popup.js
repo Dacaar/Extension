@@ -26,10 +26,17 @@ var div_autorrellenado = document.getElementById("autorrellenado");
 var div_configuracion = document.getElementById("configuracion");
 
 forms.onchange = function(){
+  while (instancia.options.length > 1) {
+    instancia.remove(1);
+  }
+  instancia.disabled = true;
+  autorrellenar.disabled = true;
   configurar.disabled = true;
-  getFormularioElegido(forms.value).then(function(form_elegido){
-    compruebaCorreccion(form_elegido);
-  });
+  if (forms.value != "inicial"){
+    getFormularioElegido(forms.value).then(function(form_elegido){
+      compruebaCorreccion(form_elegido);
+    });
+  }
 }
 var formulario_modificado;
 configurar.onclick = activaConfiguracion;
@@ -115,7 +122,6 @@ function rellena (){
     formularios_msg.innerText = "Debe seleccionar la instancia de rellenado.";
   } else {
     let indice = instancia.selectedIndex;
-
     chrome.tabs.query({active: true, status: 'complete', currentWindow: true}, function (tabs){
       var activeTab = tabs[0];     
       chrome.tabs.executeScript(activeTab.id, {file: "content_script.js"}, function(){
@@ -164,27 +170,6 @@ function getTodasInstancias(tabla){
 function compruebaCorreccion(form_activo){
   //Si selecciona contacto, comprobar que no haya un registro almacenado en chrome storage.
   //if yes, extrae el registro. else habilita configuracion.
-  /*alert(form_activo);
-  let form_serializado = new XMLSerializer().serializeToString(form_activo);
-  alert(form_serializado);
-  let parser = new DOMParser();
-  let form_parseao = parser.parseFromString(form_serializado, "text/xml");
-  alert(form_parseao);
-  alert(new XMLSerializer().serializeToString(form_parseao));*/
-
-  /*chrome.storage.local.getBytesInUse(['form'], function(bytes){
-    alert(bytes);
-  });
-
-  chrome.storage.local.set({'form': form_serializado}, function() {
-    alert("formulario guardado");
-  });
-
-  if (chrome.storage){
-    chrome.storage.local.get('form', function(r) {
-      alert(r.form);
-    });
-  }*/
 
   //Debe comprobarse si existe form guardado en local, si existe, esta completo, si no puede necesitar configuracion.
   let tablas = form_activo.getElementsByTagName("tabla");
@@ -196,47 +181,42 @@ function compruebaCorreccion(form_activo){
         if(bytes > 0){
           formularios_msg.innerHTML = "Formulario listo. Rellene ahora!!!";
           autorrellenar.disabled = false;
-          configurar.disabled = true;
           desplegable_atributos.disabled = true;
           desplegable_campos.disabled = true;
           desplegable_tablas.disabled = true;
           instancia.disabled = false;
 
-          getTodasInstancias(nombre).then(function(lista_instancias){
-            let instancias_parseadas = JSON.parse(lista_instancias);
-            let opcion = document.createElement("option");
-        
-            for (var i in instancias_parseadas){
-              opcion.text = instancias_parseadas[i].nif;
-              instancia.options[instancia.options.length] = new Option(opcion.text, i);
-            }
+          chrome.storage.local.get("Formulario1", function(respuesta){
+            let parser = new DOMParser();
+            let fichero_configurado = respuesta.Formulario1;
+            let fichero_parseado = parser.parseFromString(fichero_configurado,"text/xml");
+            tablas = fichero_parseado.getElementsByTagName("tabla");
+            nombre = tablas[0].attributes.getNamedItem("valor").value;
+
+            getTodasInstancias(nombre).then(function(lista_instancias){
+              let instancias_parseadas = JSON.parse(lista_instancias);
+              let opcion = document.createElement("option");
+          
+              for (var i in instancias_parseadas){
+                opcion.text = instancias_parseadas[i].nif;
+                instancia.options[instancia.options.length] = new Option(opcion.text, i);
+              }
+            });
           });
 
         } else {
-
-          while (instancia.options.length > 1) {
-            instancia.remove(1);
-          }
-
           formularios_msg.innerHTML = "Formulario incompleto, configure antes de rellenar.";
-          autorrellenar.disabled = true;
           configurar.disabled = false;
-          instancia.disabled = true;
         }
       });
     }    
   } else {
     formularios_msg.innerHTML = "Rellene ahora!!!";
     autorrellenar.disabled = false;
-    configurar.disabled = true;
     desplegable_atributos.disabled = true;
     desplegable_campos.disabled = true;
     desplegable_tablas.disabled = true;
     instancia.disabled = false;
-
-    while (instancia.options.length > 1) {
-      instancia.remove(1);
-    }
 
     getTodasInstancias(nombre).then(function(lista_instancias){
       let instancias_parseadas = JSON.parse(lista_instancias);
@@ -347,13 +327,12 @@ function realizaAsignacion(){
     nombre_campo = desplegable_campos.options[desplegable_campos.selectedIndex].text;
     nombre_tabla = desplegable_tablas.options[desplegable_tablas.selectedIndex].text;
 
-    if (tablas_formulario.length == 1){//Si en el form solo hay una tabla, entonces no se permite cambiar de tabla durante la asignación.
-      if (tablas_formulario[0].attributes.getNamedItem("valor").value == "no definida"){
-        tablas_formulario[0].attributes.getNamedItem("valor").value = desplegable_tablas.options[desplegable_tablas.selectedIndex].text;//CADENA SELECCIONADA;
-      }
-      desplegable_tablas.disabled = true;
-      campos_formulario = tablas_formulario[0].getElementsByTagName("campo");
+      
+    if (tablas_formulario[0].attributes.getNamedItem("valor").value == "no definida"){
+      tablas_formulario[0].attributes.getNamedItem("valor").value = desplegable_tablas.options[desplegable_tablas.selectedIndex].text;//CADENA SELECCIONADA;
     }
+    desplegable_tablas.disabled = true;
+    campos_formulario = tablas_formulario[0].getElementsByTagName("campo");
 
     for (var i = 0; i < campos_formulario.length; i++){
       if (campos_formulario[i].getElementsByTagName("descripcion")[0].childNodes[0].nodeValue == desplegable_campos.options[desplegable_campos.selectedIndex].text){//CADENA DEL CAMPO SELECCIONADO){
@@ -398,7 +377,7 @@ function realizaAsignacion(){
 //Estudiar posibilidad de colocar login en una ventana y lo restante despues.
 
 //COLOCAR TODO EN UNA MISMA BASE DE DATOS.
-//TABLA USUARIOS CON ID, CONTRASEÑA...
+//TABLA USUARIOS CON ID, CONTRASEÑA... y los forms asociados
 //TABLA FORMULARIOS:
 //ID USUARIO
 //TIMESTAMP
@@ -410,3 +389,13 @@ function realizaAsignacion(){
 
 //Intentar solucionar error de BBDD en el servidor. 
 //Ver tema de si configuro con reserva obtener la unica instancia de ella, y no undefined.
+
+//desde la extension a google aouth para q de el token
+//el token llega a la extension  y se envia a mi servidor
+
+//si en mi server, pass y username a mi server,
+//genero token si coincide con el valor d bdd y vuelvo a la extension
+
+//proximas tareas: login
+//meter en bbdd usuarios, forms y asociarlos.
+//meter en bbdd forms configurados.
