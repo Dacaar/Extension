@@ -10,9 +10,8 @@ body {
     font-size: 18px;
     font-family:"Old English Text MT";
   }
-  input[type=text] {
-    width: 70%;
-    padding: 12px 20px;
+  input[type=text], input[type=password] {    
+    padding: 10px 15px;
     margin: 8px 0;
     display: inline-block;
     border: 1px solid #ccc;
@@ -125,6 +124,21 @@ body {
     top: 50px;
     left: 25%;
     width: 50%;
+  }
+  #password_label{
+    position: absolute;
+    top: 120px;
+    left:0%;
+  }
+  #password{
+    position: absolute;
+    top: 100px;
+    left: 25%;
+    width: 50%;
+  }
+  #login_status{
+    font-weight: bold;
+    font-size: 12px;
   }
   #formularios_label{
     position: absolute;

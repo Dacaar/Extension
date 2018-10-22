@@ -5,7 +5,7 @@
 'use strict';
 
 var conectar = document.getElementById('conectar');
-conectar.onclick = conectaBD;
+conectar.onclick = autentica;
 
 var forms = document.getElementById("formularios");
 var formularios_msg = document.getElementById("formularios_label");
@@ -90,15 +90,14 @@ cerrar_config.onclick = function (){
 var autorrellenar = document.getElementById('autorrellena');
 autorrellenar.onclick = rellena;
 
-
-
-function conectaBD(){
-  var textbox = document.getElementById('username');
+function autentica(){
+  var username = document.getElementById('username');
+  var password = document.getElementById("password");
   let params = '{"username":"';
   let request = new XMLHttpRequest();
   chrome.storage.local.clear();
 
-  params = params + textbox.value + '"}';
+  params = params + username.value + '"}';
 
   request.open("POST", "http://localhost:49787/api/BBDD", true);
 
