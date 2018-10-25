@@ -19,3 +19,7 @@ chrome.runtime.onInstalled.addListener(function() {
     }]);
   });
 });
+
+chrome.runtime.onStartup.addListener(function(){
+  chrome.storage.local.clear()
+});

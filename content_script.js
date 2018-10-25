@@ -8,8 +8,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
       let fichero_configurado;
       let fichero_parseado;
       //Obtiene el form del storage, lo guarda y lo parsea. Tras esto, ejecuta el autorrellenado.
-      chrome.storage.local.get("Formulario1", function(respuesta){
-        fichero_configurado = respuesta.Formulario1;
+      chrome.storage.local.get("Contacto", function(respuesta){
+        fichero_configurado = respuesta.Contacto;
         fichero_parseado = parser.parseFromString(fichero_configurado,"text/xml");
         ejecutarAutorrellenado (fichero_parseado, instancia);
       });
@@ -85,21 +85,19 @@ function getElemento(elemento, id){
   return new Promise(resolve => {
     let request = new XMLHttpRequest();
     let params = "http://localhost:49787/api/";
-    let objeto_obtenido;
 
-    request.onreadystatechange = function() {
-      if (request.readyState == 4 && request.status == 200) {
-        objeto_obtenido = request.responseText;
-        resolve(objeto_obtenido);
-      }
-    };
-    
-    if (elemento == "persona"){
-      request.open("GET", params + elemento + "/" + id, true)
-    } else {
-      request.open("GET", params + elemento + "/" + "1", true)
-    }
-    request.send();
+    adaptaToken().then(function(token){
+      request.onreadystatechange = function() {
+        if (request.readyState == 4 && request.status == 200) {
+
+          resolve(request.responseText);
+        }
+      };
+      
+      request.open("GET", params + elemento + "/" + id, true);
+      request.setRequestHeader("Authorization", token);
+      request.send();
+    });
   })
 }
 
@@ -109,10 +107,9 @@ function getFormularioElegido(form_activo){
   return new Promise(resolve => {
     let request = new XMLHttpRequest();
     let params = "http://localhost:49787/XMLs/";
-  
-    //alert("jc0 rs:"+request.readyState+"jc0 s: "+request.status);
+
     request.onreadystatechange = function() {
-      //alert("jc1 rs: "+request.readyState+"jc1 s: "+request.status);
+
       if (request.readyState == 4 && request.status == 200) {
         resolve(request.responseXML);
       }
@@ -120,5 +117,19 @@ function getFormularioElegido(form_activo){
 
     request.open("GET", params + form_activo + ".xml", true);
     request.send();
+  })
+}
+
+function adaptaToken(){
+  return new Promise(resolve =>{
+    let token_adaptado;
+    let token_raw;
+
+    chrome.storage.local.get("token", function(respuesta){
+      token_raw = respuesta.token;
+      token_adaptado = token_raw.replace('"','');
+      token_adaptado= token_adaptado.replace('"','');
+      resolve(token_adaptado);
+      });
   })
 }

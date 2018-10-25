@@ -33,7 +33,7 @@ forms.onchange = function(){
   autorrellenar.disabled = true;
   configurar.disabled = true;
   if (forms.value != "inicial"){
-    getFormularioElegido(forms.value).then(function(form_elegido){
+    getFormularioElegido(forms.options[forms.selectedIndex].text).then(function(form_elegido){
       compruebaCorreccion(form_elegido);
     });
   }
@@ -91,15 +91,17 @@ var autorrellenar = document.getElementById('autorrellena');
 autorrellenar.onclick = rellena;
 
 function autentica(){
+  chrome.storage.local.clear();
   var username = document.getElementById('username');
   var password = document.getElementById("password");
   let params = '{"username":"';
   let request = new XMLHttpRequest();
-  chrome.storage.local.clear();
+  let login_status = document.getElementById("login_status");
 
-  params = params + username.value + '"}';
 
-  request.open("POST", "http://localhost:49787/api/BBDD", true);
+  params = params + username.value + '", "password":"' + password.value + '"}';
+
+  request.open("POST", "http://localhost:49787/api/Login/autenticar/", true);
 
   //Send the proper header information along with the request
   request.setRequestHeader("Content-type", "application/json");
@@ -109,8 +111,20 @@ function autentica(){
       div_login.style.display = "none";
       div_autorrellenado.style.display = "block";
       forms.disabled = false;
-      conectar.disabled = true;
-      textbox.disabled = true;
+      chrome.storage.local.set({"token" : request.responseText});
+
+      getFormulariosUsuario().then(function(lista_forms){
+        let forms_parseados = JSON.parse(lista_forms);
+        let opcion = document.createElement("option");
+    
+        for (var i in forms_parseados){
+          opcion.text = forms_parseados[i].nombre;
+          forms.options[forms.options.length] = new Option(opcion.text, i);
+        }
+      });
+      //El token esta escrito con las comillas, que hay que quitar antes de enviarlo al servidor.
+    } else if (request.status == 401 || request.status == 400){
+      login_status.innerText = "Error de autenticacion. Revise sus credenciales."
     }
   }
   request.send(params);
@@ -126,7 +140,7 @@ function rellena (){
       chrome.tabs.executeScript(activeTab.id, {file: "content_script.js"}, function(){
         //Formulario es el nombre del formulario que debe rellenarse, el id es el indice para buscar
         //la instancia con la que rellenar en la base de datos.
-        chrome.tabs.sendMessage(activeTab.id, {"formulario": forms.value, "id": indice})});
+        chrome.tabs.sendMessage(activeTab.id, {"formulario": forms.options[forms.selectedIndex].text, "id": indice})});
       });
   }
 }
@@ -154,15 +168,20 @@ function getTodasInstancias(tabla){
   return new Promise(resolve => {
     let request = new XMLHttpRequest();
     let params = "http://localhost:49787/api/" + tabla + "/";
-    
-    request.onreadystatechange = function() {
-      if (request.readyState == 4 && request.status == 200) {
-        resolve(request.responseText);
-      }
-    };
-    
-    request.open("GET", params, true)
-    request.send();
+
+    adaptaToken().then(function(token){
+
+      request.onreadystatechange = function() {
+        if (request.readyState == 4 && request.status == 200) {
+
+          resolve(request.responseText);
+        }
+      };
+      
+      request.open("GET", params, true);
+      request.setRequestHeader("Authorization", token);
+      request.send();
+    });
   })
 }
 //Función de test de rellenado correcto.
@@ -175,8 +194,8 @@ function compruebaCorreccion(form_activo){
   let nombre = tablas[0].attributes.getNamedItem("valor").value;
 
   if (nombre == "no definida"){
-    if (forms.value == "Formulario1"){
-      chrome.storage.local.getBytesInUse(["Formulario1"], function(bytes){
+    if (forms.options[forms.selectedIndex].text == "Contacto"){
+      chrome.storage.local.getBytesInUse(["Contacto"], function(bytes){
         if(bytes > 0){
           formularios_msg.innerHTML = "Formulario listo. Rellene ahora!!!";
           autorrellenar.disabled = false;
@@ -185,9 +204,9 @@ function compruebaCorreccion(form_activo){
           desplegable_tablas.disabled = true;
           instancia.disabled = false;
 
-          chrome.storage.local.get("Formulario1", function(respuesta){
+          chrome.storage.local.get("Contacto", function(respuesta){
             let parser = new DOMParser();
-            let fichero_configurado = respuesta.Formulario1;
+            let fichero_configurado = respuesta.Contacto;
             let fichero_parseado = parser.parseFromString(fichero_configurado,"text/xml");
             tablas = fichero_parseado.getElementsByTagName("tabla");
             nombre = tablas[0].attributes.getNamedItem("valor").value;
@@ -256,6 +275,8 @@ function activaConfiguracion(){
   });
 }
 
+
+//revisar si se utiliza finalmente el url de la ubicacion del xml.
 function getFormularioElegido(nombre){
   return new Promise(resolve => {
     let request = new XMLHttpRequest();
@@ -278,14 +299,19 @@ function getTablas(){
     let request = new XMLHttpRequest();
     let params = "http://localhost:49787/api/BBDD/";
     
-    request.onreadystatechange = function() {
-      if (request.readyState == 4 && request.status == 200) {
-        resolve(request.responseText);
-      }
-    };
-    
-    request.open("GET", params, true)
-    request.send();
+    adaptaToken().then(function(token){
+
+      request.onreadystatechange = function() {
+        if (request.readyState == 4 && request.status == 200) {
+
+          resolve(request.responseText);
+        }
+      };
+      
+      request.open("GET", params, true);
+      request.setRequestHeader("Authorization", token);
+      request.send();
+    })
   })
 }
 
@@ -294,14 +320,19 @@ function getAtributos(indice){
     let request = new XMLHttpRequest();
     let params = "http://localhost:49787/api/BBDD/";
     
-    request.onreadystatechange = function() {
-      if (request.readyState == 4 && request.status == 200) {
-        resolve(request.responseText);
-      }
-    };
-    
-    request.open("GET", params + indice, true)
-    request.send();
+    adaptaToken().then(function(token){
+
+      request.onreadystatechange = function() {
+        if (request.readyState == 4 && request.status == 200) {
+
+          resolve(request.responseText);
+        }
+      };
+      
+      request.open("GET", params + indice, true)
+      request.setRequestHeader("Authorization", token);
+      request.send();
+    });
   })
 }
 
@@ -311,6 +342,41 @@ function limpiaDesplegableCampos(){
   }
 }
 
+function getFormulariosUsuario (){
+  return new Promise(resolve => {
+    let request = new XMLHttpRequest();
+    let params = "http://localhost:49787/api/forms/disponibles";
+
+    adaptaToken().then(function(token){
+
+      request.onreadystatechange = function() {
+        if (request.readyState == 4 && request.status == 200) {
+
+          resolve(request.responseText);
+        }
+      };
+      
+      request.open("GET", params, true)
+      request.setRequestHeader("Authorization", token);
+      request.send();
+    });
+  })
+}
+
+//Aqui se adapta el token para enviarlo al servidor sin las comillas.
+function adaptaToken(){
+  return new Promise(resolve =>{
+    let token_adaptado;
+    let token_raw;
+
+    chrome.storage.local.get("token", function(respuesta){
+      token_raw = respuesta.token;
+      token_adaptado = token_raw.replace('"','');
+      token_adaptado= token_adaptado.replace('"','');
+      resolve(token_adaptado);
+      });
+  })
+}
 //asigna el campo seleccionado al atributo y la tabla, si procede.
 function realizaAsignacion(){
 
@@ -345,8 +411,8 @@ function realizaAsignacion(){
           autorrellenar.disabled = false;
           asignar.disabled = true;
           
-          chrome.storage.local.set({[forms.value] : new XMLSerializer().serializeToString(formulario_modificado)}, function() { //guarda el form configurado en la extensión.
-          });
+          chrome.storage.local.set({[forms.options[forms.selectedIndex].text] : new XMLSerializer().serializeToString(formulario_modificado)}); //guarda el form configurado en la extensión.
+          
           
           instancia.disabled = false;
           div_configuracion.style.display = "none";
@@ -373,28 +439,12 @@ function realizaAsignacion(){
   }  
 }
 
-//Estudiar posibilidad de colocar login en una ventana y lo restante despues.
-
-//COLOCAR TODO EN UNA MISMA BASE DE DATOS.
-//TABLA USUARIOS CON ID, CONTRASEÑA... y los forms asociados
 //TABLA FORMULARIOS:
 //ID USUARIO
 //TIMESTAMP
 //MD5SUM
 //URL
 //IDFORM
-//RUTA DE ARCHIVO XML
-//LEE LA CADENA DE CONEXION A LA BBDD Y SE CONECTA A ELLA, TODO EN EL SERVIDOR WEB.
 
-//Intentar solucionar error de BBDD en el servidor. 
-//Ver tema de si configuro con reserva obtener la unica instancia de ella, y no undefined.
-
-//desde la extension a google aouth para q de el token
-//el token llega a la extension  y se envia a mi servidor
-
-//si en mi server, pass y username a mi server,
-//genero token si coincide con el valor d bdd y vuelvo a la extension
-
-//proximas tareas: login
 //meter en bbdd usuarios, forms y asociarlos.
 //meter en bbdd forms configurados.
