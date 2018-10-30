@@ -2,6 +2,7 @@ body {
     height: 200px;
     width: 400px;
     background-color: #FAFAD2;
+    background-image: url("fondo.png");
   }
   h3 {
     color: #696969;
@@ -52,7 +53,7 @@ body {
     top: 135px;
     left: 5px;
     text-decoration: underline;
-    color: rgb(79, 167, 226);
+    color: rgb(0, 43, 185);
     cursor: pointer;
     border-color: black;
     height: 10px;

@@ -337,7 +337,6 @@ function getAtributos(indice){
 
       request.onreadystatechange = function() {
         if (request.readyState == 4 && request.status == 200) {
-
           resolve(request.responseText);
         }
       };
