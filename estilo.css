@@ -59,6 +59,12 @@ body {
     width: 20px;
   }
 
+  #asig_actual{
+    position: absolute;
+    top: 135px;
+    left: 60px;
+  }
+
   /* The Modal (background) */
 .modal {
   display: none; /* Hidden by default */

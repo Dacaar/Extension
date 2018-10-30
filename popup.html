@@ -53,9 +53,17 @@
             <span class="close" id="close_config">&times;</span>
             <p>El primer desplegable contiene los campos del formulario. El segundo contiene las tablas de
               su base de datos. El tercero los atributos de la tabla elegida. Asigne a cada campo un valor (atributo) y presione "Asignar".
-              Tenga en cuenta que una vez seleccione una tabla no puede ser cambiada.
+              Tenga en cuenta que una vez seleccione una tabla no puede ser cambiada. Puede ver el estado de la asignacion pulsando sobre
+              "Actual".
             </p>
           </div>
+        </div>
+        <label id = "asig_actual" class = "ayuda">Actual</label>
+        <div class="modal" id="modal_asignacion">
+          <!-- Modal content configuracion -->
+          <div class="modal-content">
+            <span class="close" id="close_asig">&times;</span>
+            <p id = "contenido_asig">Sin asignaciones que mostrar.</p>
         </div>
       </div>
       <script src="popup.js"></script>

@@ -63,6 +63,7 @@ desplegable_tablas.onchange = function(){
 
 asignar.onclick = realizaAsignacion;
 
+//variables de control de los modal (desplegables de ayuda).
 var ayuda_auto = document.getElementById("ayuda_autorrellenado");
 var modal_auto = document.getElementById("modal_autorrellenado");
 var cerrar_auto = document.getElementById("close_auto");
@@ -70,6 +71,11 @@ var cerrar_auto = document.getElementById("close_auto");
 var ayuda_config = document.getElementById("ayuda_configuracion");
 var modal_config = document.getElementById("modal_configuracion");
 var cerrar_config = document.getElementById("close_config");
+
+var ayuda_asig = document.getElementById("asig_actual");
+var modal_asig = document.getElementById("modal_asignacion");
+var cerrar_asig = document.getElementById("close_asig");
+var contenido_asig = document.getElementById("contenido_asig");
 
 ayuda_auto.onclick = function() {
   modal_auto.style.display = "block";
@@ -79,12 +85,19 @@ ayuda_config.onclick = function(){
   modal_config.style.display = "block";
 }
 
+ayuda_asig.onclick = function(){
+  modal_asig.style.display = "block";
+}
 cerrar_auto.onclick = function (){
   modal_auto.style.display = "none";
 }
 
 cerrar_config.onclick = function (){
   modal_config.style.display = "none";
+}
+
+cerrar_asig.onclick = function(){
+  modal_asig.style.display = "none";
 }
 
 var autorrellenar = document.getElementById('autorrellena');
@@ -384,24 +397,28 @@ function realizaAsignacion(){
   let campos_formulario = tablas_formulario[0].getElementsByTagName("campo");
   let nombre_campo;
   let nombre_tabla;
+  let nombre_atributo;
+
+  
   //Si algun valor no está seleccionado entonces...
   if (desplegable_campos.value == "inicial" || desplegable_tablas.value == "inicial" || desplegable_atributos.value == "inicial"){
     info_asignacion.innerText = "Debe seleccionar un valor correcto en cada desplegable.";
   } else {
-    configurar.disabled = true;
     nombre_campo = desplegable_campos.options[desplegable_campos.selectedIndex].text;
-    nombre_tabla = desplegable_tablas.options[desplegable_tablas.selectedIndex].text;
+    nombre_atributo = desplegable_atributos.options[desplegable_atributos.selectedIndex].text;
 
-      
     if (tablas_formulario[0].attributes.getNamedItem("valor").value == "no definida"){
-      tablas_formulario[0].attributes.getNamedItem("valor").value = desplegable_tablas.options[desplegable_tablas.selectedIndex].text;//CADENA SELECCIONADA;
+      nombre_tabla = desplegable_tablas.options[desplegable_tablas.selectedIndex].text;
+      tablas_formulario[0].attributes.getNamedItem("valor").value = nombre_tabla;//CADENA SELECCIONADA;
+      contenido_asig.innerHTML = "Tabla: " + nombre_tabla;
     }
     desplegable_tablas.disabled = true;
     campos_formulario = tablas_formulario[0].getElementsByTagName("campo");
 
     for (var i = 0; i < campos_formulario.length; i++){
-      if (campos_formulario[i].getElementsByTagName("descripcion")[0].childNodes[0].nodeValue == desplegable_campos.options[desplegable_campos.selectedIndex].text){//CADENA DEL CAMPO SELECCIONADO){
-        campos_formulario[i].getElementsByTagName("atributo")[0].childNodes[0].nodeValue = desplegable_atributos.options[desplegable_atributos.selectedIndex].text;//CADENA DEL ATRIBUTO SELECCIONADO;
+      if (campos_formulario[i].getElementsByTagName("descripcion")[0].childNodes[0].nodeValue == nombre_campo){//CADENA DEL CAMPO SELECCIONADO){
+        campos_formulario[i].getElementsByTagName("atributo")[0].childNodes[0].nodeValue = nombre_atributo; //CADENA DEL ATRIBUTO SELECCIONADO;
+        
         i = campos_formulario.length;
 
         desplegable_campos.remove(desplegable_campos.selectedIndex);
@@ -432,6 +449,7 @@ function realizaAsignacion(){
           formularios_msg.innerText = "Formulario configurado y guardado. Listo para rellenar.";
 
         } else {
+          contenido_asig.innerHTML = contenido_asig.innerHTML + "<br/>Campo: " + nombre_campo + " --> valor: " + nombre_atributo;
           info_asignacion.innerText = "Asignacion correcta al campo " + nombre_campo +".";
         }
       }
