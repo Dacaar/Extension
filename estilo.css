@@ -60,6 +60,16 @@ body {
     width: 20px;
   }
 
+  #borrar{
+    position: absolute;
+    top: 135px;
+    color:rgb(177, 14, 14);
+    left: 105px;
+    cursor: pointer;
+    height: 10px;
+    width: 25px;
+    text-decoration: underline;
+  }
   #asig_actual{
     position: absolute;
     top: 135px;
@@ -90,6 +100,7 @@ body {
   bottom: 15px;
   width: 80%;
   height: 80%;
+  overflow: auto;
   -webkit-animation-name: animatetop;
   -webkit-animation-duration: 0.3s;
   animation-name: animatetop;
@@ -202,7 +213,7 @@ body {
     -webkit-border-radius: 3px;
     border-radius: 3px;
     box-shadow: 1px 1px 5px #330033;
-    background: palegreen;
+    background:rgb(155, 210, 255);
   }
   #elementos {
     position: relative;
@@ -248,21 +259,21 @@ body {
   #campos {
     position: absolute;
     width: 115px;
-    top: 60px;
+    top: 50px;
     left: 5px;
  }
  
   #tablas{
     position: absolute;
     width: 115px;
-    top: 60px;
+    top: 50px;
     left: 125px;
   }
   #atributos{
     position: absolute;
     width: 115px;
     left: 245px;
-    top: 60px;
+    top: 50px;
   }
   label{
     height: 500px;

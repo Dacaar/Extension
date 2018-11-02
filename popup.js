@@ -77,6 +77,8 @@ var modal_asig = document.getElementById("modal_asignacion");
 var cerrar_asig = document.getElementById("close_asig");
 var contenido_asig = document.getElementById("contenido_asig");
 
+var borrar_campo = document.getElementById("borrar");
+
 ayuda_auto.onclick = function() {
   modal_auto.style.display = "block";
 }
@@ -100,6 +102,9 @@ cerrar_asig.onclick = function(){
   modal_asig.style.display = "none";
 }
 
+borrar_campo.onclick = deshacerAsignacion;
+
+var campos_asignados;
 var autorrellenar = document.getElementById('autorrellena');
 autorrellenar.onclick = rellena;
 
@@ -168,11 +173,9 @@ function getCamposFormulario (){
 
     for (var j = 0; j < campos.length; j++){
       opcion.text = campos[j].getElementsByTagName("descripcion")[0].childNodes[0].nodeValue;
-      if(opcion.text == "Terminos"){
-      } else {
+      if(opcion.text != "Terminos"){
         desplegable_campos.options[desplegable_campos.options.length] = new Option(opcion.text, j);
       }
-      
     }
   }  
 }
@@ -375,6 +378,28 @@ function getFormulariosUsuario (){
   })
 }
 
+function deshacerAsignacion(){
+  let lineas_contenido = contenido_asig.innerText.split(";");
+  let campos = campos_asignados.split(";", lineas_contenido.length-1);
+  let opcion = document.createElement("option");
+
+  if (campos.length > 0){
+    //Reinsercion del ultimo campo borrado del desplegable_campos.
+    opcion.text = campos[campos.length-1];
+    alert(campos[campos.length-1]);
+    desplegable_campos.options[desplegable_campos.options.length] = new Option(opcion.text, desplegable_campos.options.length-1);
+    //Eliminacion del ultimo campo en la informacion de asignacion de la lista de campos asignados.
+    lineas_contenido.splice(lineas_contenido.length-1,1);
+    contenido_asig.innerHTML = lineas_contenido.join(";<br/>");
+    info_asignacion.innerText = "Asignacion al campo " + campos[campos.length-1] + " eliminada.";
+    campos.splice(campos.length-1,1);
+    campos_asignados = campos.join(";<br/>");
+  } else {
+    info_asignacion.innerText = "No hay asignaciones que eliminar."
+  }
+//El form_modificado adaptarlo (quizá no, ya que solo se considera asignado cuando en el desplegable campo no queda ninguno por asignarse.)
+}
+
 //Aqui se adapta el token para enviarlo al servidor sin las comillas.
 function adaptaToken(){
   return new Promise(resolve =>{
@@ -417,6 +442,12 @@ function realizaAsignacion(){
     for (var i = 0; i < campos_formulario.length; i++){
       if (campos_formulario[i].getElementsByTagName("descripcion")[0].childNodes[0].nodeValue == nombre_campo){//CADENA DEL CAMPO SELECCIONADO){
         campos_formulario[i].getElementsByTagName("atributo")[0].childNodes[0].nodeValue = nombre_atributo; //CADENA DEL ATRIBUTO SELECCIONADO;
+        //Asignado el campo con su valor, salimos del for, tras borrar el campo de la lista
+        if(campos_asignados == null){
+          campos_asignados = nombre_campo + ";"; //utilizado en la funcion de borrado de asignacion.
+        } else {
+          campos_asignados = campos_asignados + nombre_campo + ";"; //utilizado en la funcion de borrado de asignacion.
+        }
         
         i = campos_formulario.length;
 
@@ -448,7 +479,7 @@ function realizaAsignacion(){
           formularios_msg.innerText = "Formulario configurado y guardado. Listo para rellenar.";
 
         } else {
-          contenido_asig.innerHTML = contenido_asig.innerHTML + "<br/>Campo: " + nombre_campo + " --> valor: " + nombre_atributo;
+          contenido_asig.innerHTML = contenido_asig.innerHTML + ";<br/>Campo: " + nombre_campo + " --> valor: " + nombre_atributo;
           info_asignacion.innerText = "Asignacion correcta al campo " + nombre_campo +".";
         }
       }
