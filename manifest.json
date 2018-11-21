@@ -1,8 +1,8 @@
 {
     "manifest_version": 2,
     
-    "name": "Autorrellenador de formularios para Chrome",
-    "description": "Esta extensión autorrellena el formulario elegido",
+    "name": "Relléna.me",
+    "description": "Autorrellena tus formularios rápidamente.",
     "version": "1.0",
 
     "background": {
@@ -11,8 +11,13 @@
         ],
         "persistent": false
     },
+
+    "icons": {
+        "48": "rellename48.png"
+    },
+
     "page_action": {
-        "default_icon": "AutoRellena.png",
+        "default_icon": "rellename19.png",
         "default_popup": "popup.html",
         "default_title": "Relléna.me"
     },
